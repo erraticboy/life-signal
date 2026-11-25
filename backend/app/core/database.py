@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 from dataclasses import dataclass
+import os
 
 from fastapi import HTTPException, status
 from sqlalchemy import create_engine, text
@@ -28,11 +29,12 @@ def get_engine() -> Engine | None:
     if not settings.is_database_configured:
         return None
     if _engine is None:
+        is_serverless = bool(os.getenv("VERCEL") or os.getenv("VERCEL_ENV"))
         _engine = create_engine(
             settings.DATABASE_URL,
             pool_pre_ping=True,
-            pool_size=5,
-            max_overflow=10,
+            pool_size=2 if is_serverless else 5,
+            max_overflow=3 if is_serverless else 10,
         )
         _SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=_engine)
     return _engine

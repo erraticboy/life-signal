@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from functools import lru_cache
+import os
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -122,6 +123,8 @@ class Settings(BaseSettings):
     def resolved_storage_root(self) -> Path:
         root = Path(self.STORAGE_ROOT.strip() or "./storage")
         if not root.is_absolute():
+            if os.getenv("VERCEL") or os.getenv("VERCEL_ENV"):
+                return (Path("/tmp") / "life_signal_storage").resolve()
             root = (BACKEND_DIR / root).resolve()
         return root
 
