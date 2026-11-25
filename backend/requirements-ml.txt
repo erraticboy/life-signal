@@ -1,0 +1,9 @@
+# Optional Heavy Deep Learning Stack for Full YOLO Training/Inference & Sentence Transformers
+# Install into backend/.venv when training custom weights or running GPU/CPU deep inference:
+#   pip install -r requirements-ml.txt
+torch>=2.5.0
+torchvision>=0.20.0
+ultralytics>=8.3.0
+sentence-transformers>=3.3.0
+xgboost>=2.1.0
+

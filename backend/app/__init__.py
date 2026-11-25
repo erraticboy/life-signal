@@ -1,0 +1,2 @@
+"""LIFE SIGNAL backend package."""
+

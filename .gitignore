@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# Node / Frontend
+/package.json
+/package-lock.json
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.local
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+!frontend/.env.example
+!backend/.env.example
+backend/.env
+frontend/.env
+*firebase-adminsdk*.json
+*service-account*.json
+credentials/
+backend/credentials/
+
+# Runtime Storage (Uploads, Generated PDFs, Model Weights)
+backend/storage/
+backend/weights/
+uploads/
+generated_pdfs/
+*.pdf
+*.pt
+*.onnx
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+

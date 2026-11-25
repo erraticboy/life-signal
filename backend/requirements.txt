@@ -1,0 +1,32 @@
+# Core FastAPI & Validation
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+pydantic==2.10.3
+pydantic-settings==2.7.0
+email-validator==2.2.0
+python-multipart==0.0.19
+
+# Database & PostGIS
+sqlalchemy==2.0.36
+alembic==1.14.0
+geoalchemy2==0.16.0
+shapely==2.0.6
+psycopg2-binary==2.9.10
+
+# Authentication & Security
+firebase-admin==6.6.0
+slowapi==0.1.9
+
+# Phase 2: Official PDF Receipts, QR Codes & Image Validation
+reportlab==4.2.5
+qrcode==8.0
+pillow==11.0.0
+
+# Phase 3: Computer Vision, Uncertainty Calibration & Multimodal Similarity
+opencv-python-headless==4.10.0.84
+scikit-learn==1.6.0
+scipy==1.14.1
+
+# Testing
+pytest==8.3.4
+httpx==0.28.1
