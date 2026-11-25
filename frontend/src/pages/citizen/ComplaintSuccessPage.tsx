@@ -148,8 +148,7 @@ export function ComplaintSuccessPage() {
                   <div className="space-y-2">
                     <p>
                       Your complaint and official PDF receipt are safely stored and ready to download above.
-                      SMTP email credentials are not configured in <code className="font-mono">backend/.env</code>{" "}
-                      yet, so no email was sent to{" "}
+                      Server email delivery is not configured yet, so no confirmation email was sent to{" "}
                       <span className="font-mono text-xs">{complaint.document?.email_recipient}</span>.
                     </p>
                     <Button size="sm" variant="secondary" onClick={() => void handleResendEmail()} disabled={resending}>

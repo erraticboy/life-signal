@@ -27,28 +27,35 @@ def _send_mime_message(msg: MIMEMultipart, recipient: str) -> EmailDispatchResul
         return EmailDispatchResult(
             status=EmailDeliveryStatus.NOT_CONFIGURED,
             error=(
-                "SMTP credentials are not configured in backend/.env. Set SMTP_USERNAME and "
-                "SMTP_PASSWORD (e.g. a Gmail App Password) to send confirmation emails."
+                "SMTP credentials are not configured on the server yet. Set SMTP_USERNAME and "
+                "SMTP_PASSWORD (e.g. a 16-character Gmail App Password) to send confirmation emails."
             ),
             sent_at=None,
         )
 
-    from_addr = settings.SMTP_FROM_EMAIL.strip() or settings.SMTP_USERNAME.strip()
+    smtp_host = settings.SMTP_HOST.strip()
+    smtp_user = settings.SMTP_USERNAME.strip()
+    smtp_password = (
+        "".join(settings.SMTP_PASSWORD.split())
+        if smtp_host.lower() == "smtp.gmail.com"
+        else settings.SMTP_PASSWORD
+    )
+    from_addr = settings.SMTP_FROM_EMAIL.strip() or smtp_user
     msg["From"] = f"{settings.SMTP_FROM_NAME} <{from_addr}>"
     msg["To"] = recipient
 
     try:
-        if settings.SMTP_PORT == 465 and not settings.SMTP_USE_TLS:
-            with smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT, timeout=20) as server:
-                server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
+        if settings.SMTP_PORT == 465:
+            with smtplib.SMTP_SSL(smtp_host, settings.SMTP_PORT, timeout=20) as server:
+                server.login(smtp_user, smtp_password)
                 server.send_message(msg)
         else:
-            with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=20) as server:
+            with smtplib.SMTP(smtp_host, settings.SMTP_PORT, timeout=20) as server:
                 server.ehlo()
                 if settings.SMTP_USE_TLS:
                     server.starttls()
                     server.ehlo()
-                server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
+                server.login(smtp_user, smtp_password)
                 server.send_message(msg)
 
         return EmailDispatchResult(

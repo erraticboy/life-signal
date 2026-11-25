@@ -201,3 +201,48 @@ def test_complaint_registration_pdf_ownership_and_email_resilience(
     )
     assert detail_resp.status_code == 200
     assert len(detail_resp.json()["history"]) == 2
+
+
+def test_smtp_mailer_strips_gmail_app_password_spaces_and_uses_ssl_on_465(
+    isolated_env: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from email.mime.multipart import MIMEMultipart
+    from app.services.email.mailer import _send_mime_message
+
+    monkeypatch.setenv("SMTP_HOST", "smtp.gmail.com")
+    monkeypatch.setenv("SMTP_PORT", "465")
+    monkeypatch.setenv("SMTP_USE_TLS", "true")
+    monkeypatch.setenv("SMTP_USERNAME", " sender@gmail.com ")
+    monkeypatch.setenv("SMTP_PASSWORD", "abcd efgh ijkl mnop")
+    get_settings.cache_clear()
+
+    captured: dict[str, object] = {}
+
+    class DummySMTPSSL:
+        def __init__(self, host: str, port: int, timeout: int = 20) -> None:
+            captured["ssl_host"] = host
+            captured["ssl_port"] = port
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args) -> None:
+            return None
+
+        def login(self, user: str, password: str) -> None:
+            captured["user"] = user
+            captured["password"] = password
+
+        def send_message(self, msg: MIMEMultipart) -> None:
+            captured["to"] = msg["To"]
+
+    monkeypatch.setattr("smtplib.SMTP_SSL", DummySMTPSSL)
+    msg = MIMEMultipart()
+    res = _send_mime_message(msg, "citizen@example.com")
+    assert res.status == EmailDeliveryStatus.SENT
+    assert captured["ssl_host"] == "smtp.gmail.com"
+    assert captured["ssl_port"] == 465
+    assert captured["user"] == "sender@gmail.com"
+    assert captured["password"] == "abcdefghijklmnop"
+
